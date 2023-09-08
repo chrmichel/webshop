@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pydantic[all]
+sqlalchemy
+requests
+python-multipart
+python-jose
+bcrypt
+passlib
+ipykernel
+PyQt5
