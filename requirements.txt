@@ -9,3 +9,4 @@ bcrypt
 passlib
 ipykernel
 PyQt5
+python-dotenv
