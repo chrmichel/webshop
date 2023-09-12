@@ -2,6 +2,7 @@ from pydantic import EmailStr, Field, BaseModel
 
 
 class UserBase(BaseModel):
+    username: str
     fullname: str
     email: EmailStr
     credit: int = Field(default=0, ge=0)
