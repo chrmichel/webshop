@@ -5,7 +5,8 @@ from util import User
 
 
 
-mike = UserIn(fullname='Michael Biggs', username='mbiggie', email='mbiggs@cpd.gov', plainpw='mikepw', credit=5212)
+MIKE = UserIn(fullname='Michael Biggs', username='mbiggie', email='mbiggs@cpd.gov', plainpw='mikepw', credit=5212)
+MOLLY = UserIn(fullname='Molly Flynn', username='rollymolly', email='m.flynn@wpelem.gov', plainpw='mollypw')
 
 
 def get_user(username: str, db: Session) -> User:
@@ -24,5 +25,9 @@ def create_user(user: UserIn, db: Session) -> User:
     return dbuser
 
 
+def delete_user(id: int, db: Session) -> None:
+    db.query(User).filter(User.id == id).delete(False)
+
+
 if __name__=="__main__":
-    print(create_user(mike))
+    print(create_user(MIKE))

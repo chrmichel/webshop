@@ -3,19 +3,19 @@ import uvicorn
 import logging
 from contextlib import asynccontextmanager
 
-from util import host, port, engine, Base
+from util import host, port, startup
 from routers import user_router
 
 
-logging.basicConfig(filename="main.log", level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logging.info("App started.")
-    Base.metadata.create_all(bind=engine)
+    logger.info("App started.")
+    startup()
     yield
-    logging.info("App finished.")
+    logger.info("App finished.")
 
 
 app = FastAPI(lifespan=lifespan)
