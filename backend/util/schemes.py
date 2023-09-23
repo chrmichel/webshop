@@ -52,6 +52,16 @@ class ItemOut(ItemBase):
         string += f"Price:\t{self.price/100.}\nStock:\t{self.stock}\n"
         return string
     
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: str | None = None
+
+    
 if __name__ == '__main__':
     apple = ItemOut(name='apple', description="delicious", price=299, stock=6)
     print(apple)
