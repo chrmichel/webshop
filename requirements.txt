@@ -1,12 +1,25 @@
+# backend
+
+# fastapi
 fastapi
 uvicorn[standard]
 pydantic[all]
-sqlalchemy
-requests
 python-multipart
+# database
+sqlalchemy
+# auth and hashing
 python-jose
 bcrypt
 passlib
+# environment
+python-dotenv
+# testing
+pytest
+pytest-qt
+httpx
+
+#frontend
+
+requests
 ipykernel
 PyQt5
-python-dotenv
