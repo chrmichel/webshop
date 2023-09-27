@@ -1,4 +1,4 @@
-from pydantic import EmailStr, Field, BaseModel
+from pydantic import EmailStr, Field, BaseModel, ConfigDict
 
 
 class UserBase(BaseModel):
@@ -16,8 +16,7 @@ class UserDB(UserBase):
     id: int
     hashedpw: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserOut(UserBase):
@@ -42,8 +41,7 @@ class ItemDB(ItemBase):
     id: int
     vendor_id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ItemOut(ItemBase):
