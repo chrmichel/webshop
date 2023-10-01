@@ -14,7 +14,7 @@ class Settings:
     PORT: int = int(os.getenv("PORT", 8000))
     SECRET_KEY: str = os.getenv("SECRET_KEY")
     ALGORITHM: str = os.getenv("ALGORITHM")
-    TOKEN_EXPIRE_MINUTES: str = os.getenv("TOKEN_EXPIRE_MINUTES")
+    TOKEN_EXPIRE_MINUTES: int = int(os.getenv("TOKEN_EXPIRE_MINUTES"))
     
 
 settings = Settings()
