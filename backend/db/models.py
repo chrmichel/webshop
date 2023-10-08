@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+import datetime
 
 from .base_class import Base
 
@@ -11,13 +12,17 @@ class User(Base):
     email = Column("email", String(50), unique=True, nullable=False)
     hashedpw = Column("hashedpw", String(70))
     credit = Column("credit", Integer)
+    created_at = Column("created at", DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column("updated at", DateTime, default=datetime.datetime.utcnow)
+    address = Column("address", String(200))
 
 
 class Item(Base):
     __tablename__ = "items"
     id = Column("id", Integer, primary_key=True, index=True)
-    name = Column("name", String(30), index=True)
+    name = Column("name", String(70), index=True)
     description = Column("description", String(200))
     price = Column("price", Integer)
     stock = Column("stock", Integer)
-    vendor_id = Column("vendor_id", ForeignKey("users.id"))
+    created_at = Column("created at", DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column("updated at", DateTime, default=datetime.datetime.utcnow)

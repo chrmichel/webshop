@@ -1,11 +1,20 @@
 from pydantic import EmailStr, Field, BaseModel, ConfigDict
+from datetime import datetime
 
 
 class UserBase(BaseModel):
     username: str
     fullname: str
     email: EmailStr
-    credit: int = Field(default=0, ge=0)
+    credit: int | None = Field(default=0, ge=0)
+    address: str | None = None
+    
+
+class UserUpdate(BaseModel):
+    username: str | None = None
+    fullname: str | None = None
+    email: EmailStr | None = None
+    address: str | None = None
 
 
 class UserIn(UserBase):
@@ -15,21 +24,28 @@ class UserIn(UserBase):
 class UserDB(UserBase):
     id: int
     hashedpw: str
+    created_at: datetime
+    updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class UserOut(UserBase):
-    def __str__(self):
-        string = f"Name:\t{self.fullname}\nEmail:\t{self.email}\n"
-        string += f"Credit:\t{self.credit/100.}\n"
-        return string
+class UserOut(BaseModel):
+    username: str
+    created_at: datetime
+    credit: int
+
+
+class FullUserOut(UserBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
 
 
 class ItemBase(BaseModel):
     name: str
-    description: str | None
-    price: int = Field(default=0, ge=0)
+    description: str | None = None
+    price: int = Field(ge=0)
     stock: int = Field(default=0, ge=0)
 
 
@@ -39,7 +55,8 @@ class ItemIn(ItemBase):
 
 class ItemDB(ItemBase):
     id: int
-    vendor_id: int
+    created_at: datetime
+    updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -58,10 +75,3 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
-
-    
-if __name__ == '__main__':
-    apple = ItemOut(name='apple', description="delicious", price=299, stock=6)
-    print(apple)
-    mike = UserOut(fullname='Michael Biggs', email='mbiggs@cpd.gov', credit=5212)
-    print(mike)
