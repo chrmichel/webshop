@@ -16,6 +16,7 @@ python-dotenv
 # testing
 pytest
 pytest-qt
+pytest-mock
 httpx
 
 #frontend
