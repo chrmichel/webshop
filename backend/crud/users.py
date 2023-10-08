@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from core.schemas import UserIn
+from core.schemas import UserIn, UserUpdate
 from db.models import User
 from .errors import NoSuchEmailError, NoSuchUserError, UsernameTakenError, EmailTakenError
 from .hashing import Hasher
@@ -10,6 +10,13 @@ def get_user(username: str, db: Session) -> User:
     user: User = db.query(User).filter(User.username == username).first()
     if not user:
         raise NoSuchUserError(username)
+    return user
+
+
+def get_user_id(id: int, db: Session) -> User:
+    user: User = db.query(User).filter(User.id == id).first()
+    if not user:
+        raise NoSuchUserError(id)
     return user
 
 
@@ -45,6 +52,13 @@ def create_user(user: UserIn, db: Session) -> User:
     db.commit()
     db.refresh(dbuser)
     return dbuser
+
+
+def update_user(new_data: UserUpdate, user: User, db: Session) -> User:
+    update_dict = new_data.model_dump(exclude_unset=True)
+    db.query(User).filter(User.id == user.id).update(update_dict)
+    db.commit()
+    return get_user_id(user.id, db)
 
 
 def delete_user(id: int, db: Session) -> bool:
