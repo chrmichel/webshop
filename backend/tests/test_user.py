@@ -1,6 +1,8 @@
 from fastapi.testclient import TestClient
 import pytest
 
+from crud.security import Hasher
+
 
 @pytest.fixture
 def user_repeat_email(mike_in):
@@ -68,3 +70,12 @@ def test_update_user(auth_client: TestClient, user_upate):
 def test_delete_user(auth_client: TestClient):
     response = auth_client.delete("/users/delete")
     assert response.status_code == 204
+
+
+def test_reset_password(auth_client: TestClient, mike_in: dict):
+    new_pw = "NEW_Test_pw"
+    new_pw_hash = Hasher.get_password_hash(new_pw)
+    response = auth_client.post("/users/reset-password", data=new_pw)
+    assert response.status_code == 200
+    assert response.json()["hashed_pw"] == new_pw_hash
+

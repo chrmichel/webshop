@@ -61,6 +61,13 @@ def update_user(new_data: UserUpdate, user: User, db: Session) -> User:
     return get_user_id(user.id, db)
 
 
+def reset_password(new_pw: str, user: User, db: Session) -> User:
+    hashedpw = Hasher.get_password_hash(new_pw)
+    db.query(User).filter(User.id == user.id).update({"hashedpw": hashedpw})
+    db.commit()
+    return get_user_id(user.id, db)
+
+
 def delete_user(id: int, db: Session) -> bool:
     deleted: bool = db.query(User).filter(User.id == id).delete(False)
     db.commit()

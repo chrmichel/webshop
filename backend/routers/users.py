@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from core.schemas import UserIn, UserOut, FullUserOut, UserUpdate
 from crud.users import (create_user, delete_user, get_user, get_all_users,
-                        update_user)
+                        update_user, reset_password)
 from crud.errors import UsernameTakenError, EmailTakenError, NoSuchUserError
 from db.models import User
 from db.session import get_db
@@ -61,3 +61,11 @@ def make_user(userdata: UserIn, db: Session = Depends(get_db)):
     except EmailTakenError as e:
         raise HTTPException(451, e.message)
     return user
+
+
+@router.post('/reset-password', response_model=FullUserOut)
+def password_reset(
+    new_pw: str, user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    return reset_password(new_pw, user, db)
