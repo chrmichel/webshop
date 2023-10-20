@@ -26,11 +26,9 @@ class NoSuchEmailError(Exception):
         super().__init__(self.message)
 
 
-class UnauthorizedError(Exception):
-    def __init__(self, *args: object) -> None:
-        self.message = "You are not authorized for this action."
-        super().__init__(self.message, *args)
-
-
-class WrongPasswordError(Exception):
-    pass
+class InvalidAmountError(Exception):
+    def __init__(self, amount: int|float) -> None:
+        self.amount = amount
+        self.message = """The amount you entered is invalid, please choose 
+        an amount that is positive and in whole cents."""
+        super().__init__(self.message)

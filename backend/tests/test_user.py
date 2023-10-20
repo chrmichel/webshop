@@ -1,8 +1,6 @@
 from fastapi.testclient import TestClient
 import pytest
 
-from crud.security import Hasher
-
 
 @pytest.fixture
 def user_repeat_email(mike_in):
@@ -52,7 +50,9 @@ def test_create_user_email_repeat(client: TestClient, user_repeat_email):
     assert response.status_code == 451
 
 
-def test_create_user_username_repeat(client: TestClient, user_repeat_username):
+def test_create_user_username_repeat(
+        client: TestClient, user_repeat_username
+):
     response = client.post("/users/register", json=user_repeat_username)
     assert response.status_code == 451
 
@@ -72,10 +72,33 @@ def test_delete_user(auth_client: TestClient):
     assert response.status_code == 204
 
 
-def test_reset_password(auth_client: TestClient, mike_in: dict):
+def test_reset_password(auth_client: TestClient):
     new_pw = "NEW_Test_pw"
-    new_pw_hash = Hasher.get_password_hash(new_pw)
-    response = auth_client.post("/users/reset-password", data=new_pw)
+    response = auth_client.post(
+        "/users/reset-password", json={"new_pw": new_pw}
+    )
     assert response.status_code == 200
-    assert response.json()["hashed_pw"] == new_pw_hash
 
+
+def test_add_credit(auth_client: TestClient, mike_in: dict):
+    amount = 1
+    response = auth_client.post("/users/add-credit", json={"amount": amount})
+    assert response.status_code == 200
+    assert response.json()["credit"] == mike_in["credit"] + amount
+
+
+def test_add_credit_negative(auth_client: TestClient):
+    amount = -2
+    response = auth_client.post("/users/add-credit", json={"amount": amount})
+    assert response.status_code == 422
+    msg = """Input should be greater than 0"""
+    assert response.json()["detail"][0]["msg"] == msg
+
+
+def test_add_credit_float(auth_client: TestClient):
+    amount = 1.6
+    response = auth_client.post("/users/add-credit", json={"amount": amount})
+    assert response.status_code == 422
+    msg = "Input should be a valid integer, got a number with a fractional part"
+    assert response.json()["detail"][0]["msg"] == msg
+    

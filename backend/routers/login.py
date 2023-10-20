@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import APIRouter, HTTPException, Depends, Security
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm,\
+    SecurityScopes
 from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from datetime import timedelta
@@ -9,32 +10,64 @@ from core.schemas import TokenData, Token
 from crud.users import get_user
 from crud.errors import NoSuchUserError
 from crud.security import authenticate_user, create_access_token
+from db.models import User
 from db.session import  get_db
 
 
-oauth2_scheme = OAuth2PasswordBearer("token")
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="token",
+    scopes={
+        'me': "Access information about the current user.",
+        'admin': "Admin privilege; modify shop items"
+    }
+)
+
+def get_scopes() -> list[str]:
+    return ["me"]
 
 router = APIRouter()
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(
+        security_scopes: SecurityScopes,
+        token: str = Depends(oauth2_scheme),
+        db: Session = Depends(get_db)
+):
+    if security_scopes.scopes:
+        authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
+    else:
+        authenticate_value = "Bearer"
     credentials_exception = HTTPException(
         status_code=401,
         detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+        headers={"WWW-Authenticate": authenticate_value},
     )
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_scopes = payload.get("scopes", [])
+        token_data = TokenData(scopes=token_scopes, username=username)
     except JWTError:
         raise credentials_exception
     try:
         user = get_user(token_data.username, db)
     except NoSuchUserError:
         raise credentials_exception
+    for scope in security_scopes.scopes:
+        if scope not in token_data.scopes:
+            raise HTTPException(
+                status_code=401,
+                detail="Not enough permissions",
+                headers={"WWW-Authenticate": authenticate_value},
+            )
     return user
+
+
+async def get_current_active_user(
+        current_user: User = Security(get_current_user, scopes=['me'])
+):
+    return current_user
 
 
 @router.post("/token", response_model=Token)
@@ -51,6 +84,6 @@ async def login_for_access_token(
         )
     access_token_expires = timedelta(minutes=settings.TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.username, "scopes": get_scopes()}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}

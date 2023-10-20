@@ -2,7 +2,8 @@ from sqlalchemy.orm import Session
 
 from core.schemas import UserIn, UserUpdate
 from db.models import User
-from .errors import NoSuchEmailError, NoSuchUserError, UsernameTakenError, EmailTakenError
+from .errors import NoSuchEmailError, NoSuchUserError, UsernameTakenError,\
+    EmailTakenError
 from .hashing import Hasher
 
 
@@ -72,3 +73,11 @@ def delete_user(id: int, db: Session) -> bool:
     deleted: bool = db.query(User).filter(User.id == id).delete(False)
     db.commit()
     return deleted
+
+
+def more_money(amount: int, user: User, db: Session) -> User:
+    
+    db.query(User).filter(User.id == user.id)\
+        .update({"credit": user.credit + amount})
+    db.commit()
+    return get_user_id(user.id, db)

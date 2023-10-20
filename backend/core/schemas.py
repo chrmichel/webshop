@@ -75,3 +75,12 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+    scopes: list[str] = []
+
+
+class PasswordUpdate(BaseModel):
+    new_pw: str
+
+
+class AddCredit(BaseModel):
+    amount: int = Field(gt=0)
