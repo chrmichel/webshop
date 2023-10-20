@@ -3,7 +3,7 @@
 # fastapi
 fastapi
 uvicorn[standard]
-pydantic[all]
+pydantic[email]
 python-multipart
 # database
 sqlalchemy
