@@ -1,5 +1,11 @@
 from pydantic import EmailStr, Field, BaseModel, ConfigDict
 from datetime import datetime
+from enum import Enum
+
+
+class Role(str, Enum):
+    ADMIN = "admin"
+    USER = "user"
 
 
 class UserBase(BaseModel):
@@ -8,6 +14,7 @@ class UserBase(BaseModel):
     email: EmailStr
     credit: int | None = Field(default=0, ge=0)
     address: str | None = None
+    role: Role = Role.USER
     
 
 class UserUpdate(BaseModel):

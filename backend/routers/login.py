@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 
 from core.config import settings
-from core.schemas import TokenData, Token
+from core.schemas import TokenData, Token, Role
 from crud.users import get_user
 from crud.errors import NoSuchUserError
 from crud.security import authenticate_user, create_access_token
@@ -22,7 +22,9 @@ oauth2_scheme = OAuth2PasswordBearer(
     }
 )
 
-def get_scopes() -> list[str]:
+def get_scopes(user: User) -> list[str]:
+    if user.role == Role.ADMIN:
+        return ["me", "admin"]
     return ["me"]
 
 router = APIRouter()

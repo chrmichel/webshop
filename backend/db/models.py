@@ -12,9 +12,10 @@ class User(Base):
     email = Column("email", String(50), unique=True, nullable=False)
     hashedpw = Column("hashedpw", String(70))
     credit = Column("credit", Integer)
-    created_at = Column("created at", DateTime, default=datetime.datetime.utcnow)
-    updated_at = Column("updated at", DateTime, default=datetime.datetime.utcnow)
+    created_at = Column("created at", DateTime, default=datetime.datetime.now)
+    updated_at = Column("updated at", DateTime, default=datetime.datetime.now)
     address = Column("address", String(200))
+    role = Column("role", String(10))
 
 
 class Item(Base):
