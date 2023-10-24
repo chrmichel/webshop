@@ -14,7 +14,7 @@ class UserBase(BaseModel):
     email: EmailStr
     credit: int | None = Field(default=0, ge=0)
     address: str | None = None
-    role: Role = Role.USER
+    is_active: bool = True
     
 
 class UserUpdate(BaseModel):
@@ -33,6 +33,7 @@ class UserDB(UserBase):
     hashedpw: str
     created_at: datetime
     updated_at: datetime
+    role: Role
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -41,12 +42,15 @@ class UserOut(BaseModel):
     username: str
     created_at: datetime
     credit: int
+    role: Role
+    is_active: bool
 
 
 class FullUserOut(UserBase):
     id: int
     created_at: datetime
     updated_at: datetime
+    role: Role
 
 
 class ItemBase(BaseModel):

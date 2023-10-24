@@ -22,3 +22,4 @@ settings = Settings()
 ADDRESS = "3529 Lincoln St, Chicago, IL"
 MIKE = UserIn(fullname='Michael Biggs', username='mbiggie', email='mbiggs@cpd.gov', plainpw='mikepw', credit=5212)
 MOLLY = UserIn(fullname='Molly Flynn', username='rollymolly', email='m.flynn@wpelem.gov', plainpw='mollypw')
+ADMIN = UserIn(username='ADMIN', fullname='Ad Min', email='admin@web.shop', plainpw='adminpw')

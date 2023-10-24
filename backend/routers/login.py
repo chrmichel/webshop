@@ -18,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="token",
     scopes={
         'me': "Access information about the current user.",
-        'admin': "Admin privilege; modify shop items"
+        'admin': "Admin privilege; modify shop items",
     }
 )
 
@@ -69,7 +69,12 @@ async def get_current_user(
 async def get_current_active_user(
         current_user: User = Security(get_current_user, scopes=['me'])
 ):
-    return current_user
+    if current_user.is_active:
+        return current_user
+    raise HTTPException(
+        status_code=401,
+        detail="Deactivated user"
+    )
 
 
 @router.post("/token", response_model=Token)
@@ -86,6 +91,6 @@ async def login_for_access_token(
         )
     access_token_expires = timedelta(minutes=settings.TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username, "scopes": get_scopes()}, expires_delta=access_token_expires
+        data={"sub": user.username, "scopes": get_scopes(user)}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}

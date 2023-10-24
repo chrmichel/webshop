@@ -32,7 +32,7 @@ def test_get_all_users(client: TestClient):
     response = client.get("/users/all")
     assert response.status_code == 200
     users = response.json()
-    assert len(users) == 1
+    assert len(users) == 2
     user = users[0]
     assert user["username"] == "mbiggie"
     assert user["credit"] == 5212

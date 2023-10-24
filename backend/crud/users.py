@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from core.schemas import UserIn, UserUpdate
+from core.schemas import UserIn, UserUpdate, Role
 from db.models import User
 from .errors import NoSuchEmailError, NoSuchUserError, UsernameTakenError,\
     EmailTakenError
@@ -47,7 +47,8 @@ def create_user(user: UserIn, db: Session) -> User:
 
     dbuser = User(
         fullname=user.fullname, username=user.username, email=user.email,
-        hashedpw=Hasher.get_password_hash(user.plainpw), credit=user.credit
+        hashedpw=Hasher.get_password_hash(user.plainpw), credit=user.credit,
+        role=Role.USER
     )
     db.add(dbuser)
     db.commit()

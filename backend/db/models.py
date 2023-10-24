@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
 import datetime
 
 from .base_class import Base
@@ -16,6 +16,7 @@ class User(Base):
     updated_at = Column("updated at", DateTime, default=datetime.datetime.now)
     address = Column("address", String(200))
     role = Column("role", String(10))
+    is_active = Column("is active", Boolean, default=True)
 
 
 class Item(Base):
