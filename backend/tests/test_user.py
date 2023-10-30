@@ -8,8 +8,9 @@ def user_repeat_email(mike_in):
         "username": "name",
         "fullname": "Full Name",
         "email": mike_in["email"],
-        "plainpw": "testpw"
+        "plainpw": "testpw",
     }
+
 
 @pytest.fixture
 def user_repeat_username(mike_in):
@@ -17,10 +18,11 @@ def user_repeat_username(mike_in):
         "username": mike_in["username"],
         "fullname": "Full Name",
         "email": "bitch@aol.com",
-        "plainpw": "testpw"
+        "plainpw": "testpw",
     }
 
-#TODO: add test for creation date
+
+# TODO: add test for creation date
 def test_get_user(client: TestClient):
     response = client.get("/users/mbiggie")
     assert response.status_code == 200
@@ -50,9 +52,7 @@ def test_create_user_email_repeat(client: TestClient, user_repeat_email):
     assert response.status_code == 451
 
 
-def test_create_user_username_repeat(
-        client: TestClient, user_repeat_username
-):
+def test_create_user_username_repeat(client: TestClient, user_repeat_username):
     response = client.post("/users/register", json=user_repeat_username)
     assert response.status_code == 451
 
@@ -74,9 +74,7 @@ def test_delete_user(auth_client: TestClient):
 
 def test_reset_password(auth_client: TestClient):
     new_pw = "NEW_Test_pw"
-    response = auth_client.post(
-        "/users/reset-password", json={"new_pw": new_pw}
-    )
+    response = auth_client.post("/users/reset-password", json={"new_pw": new_pw})
     assert response.status_code == 200
 
 
@@ -101,4 +99,3 @@ def test_add_credit_float(auth_client: TestClient):
     assert response.status_code == 422
     msg = "Input should be a valid integer, got a number with a fractional part"
     assert response.json()["detail"][0]["msg"] == msg
-    

@@ -2,8 +2,12 @@ from sqlalchemy.orm import Session
 
 from core.schemas import UserIn, UserUpdate, Role
 from db.models import User
-from .errors import NoSuchEmailError, NoSuchUserError, UsernameTakenError,\
-    EmailTakenError
+from .errors import (
+    NoSuchEmailError,
+    NoSuchUserError,
+    UsernameTakenError,
+    EmailTakenError,
+)
 from .hashing import Hasher
 
 
@@ -46,9 +50,12 @@ def create_user(user: UserIn, db: Session) -> User:
         pass
 
     dbuser = User(
-        fullname=user.fullname, username=user.username, email=user.email,
-        hashedpw=Hasher.get_password_hash(user.plainpw), credit=user.credit,
-        role=Role.USER
+        fullname=user.fullname,
+        username=user.username,
+        email=user.email,
+        hashedpw=Hasher.get_password_hash(user.plainpw),
+        credit=user.credit,
+        role=Role.USER,
     )
     db.add(dbuser)
     db.commit()
@@ -77,8 +84,6 @@ def delete_user(id: int, db: Session) -> bool:
 
 
 def more_money(amount: int, user: User, db: Session) -> User:
-    
-    db.query(User).filter(User.id == user.id)\
-        .update({"credit": user.credit + amount})
+    db.query(User).filter(User.id == user.id).update({"credit": user.credit + amount})
     db.commit()
     return get_user_id(user.id, db)

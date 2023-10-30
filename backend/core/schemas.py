@@ -15,7 +15,7 @@ class UserBase(BaseModel):
     credit: int | None = Field(default=0, ge=0)
     address: str | None = None
     is_active: bool = True
-    
+
 
 class UserUpdate(BaseModel):
     username: str | None = None
@@ -77,7 +77,7 @@ class ItemOut(ItemBase):
         string = f"Name:\t{self.name}\nDesc:\t{self.description}\n"
         string += f"Price:\t{self.price/100.}\nStock:\t{self.stock}\n"
         return string
-    
+
 
 class Token(BaseModel):
     access_token: str

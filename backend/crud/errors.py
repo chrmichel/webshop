@@ -27,7 +27,7 @@ class NoSuchEmailError(Exception):
 
 
 class InvalidAmountError(Exception):
-    def __init__(self, amount: int|float) -> None:
+    def __init__(self, amount: int | float) -> None:
         self.amount = amount
         self.message = """The amount you entered is invalid, please choose 
         an amount that is positive and in whole cents."""

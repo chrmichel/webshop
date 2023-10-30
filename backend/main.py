@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 import uvicorn
 from contextlib import asynccontextmanager
 
@@ -30,7 +31,6 @@ def startup():
             create_user(MOLLY, db)
 
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     startup()
@@ -45,8 +45,8 @@ app.include_router(login_router, tags=["Login"])
 
 @app.get("/")
 async def start():
-    return {"message": "Hello world"}
+    return RedirectResponse("/docs")
 
 
-if __name__=="__main__":
-    uvicorn.run(app='main:app', host=settings.APP_URL, port=settings.PORT, reload=True)
+if __name__ == "__main__":
+    uvicorn.run(app="main:app", host=settings.APP_URL, port=settings.PORT, reload=True)
