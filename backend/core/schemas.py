@@ -64,6 +64,12 @@ class ItemIn(ItemBase):
     pass
 
 
+class ItemUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    price: int | None = None
+
+
 class ItemDB(ItemBase):
     id: int
     created_at: datetime
@@ -95,3 +101,7 @@ class PasswordUpdate(BaseModel):
 
 class AddCredit(BaseModel):
     amount: int = Field(gt=0)
+
+
+class StockAmount(BaseModel):
+    amount: int

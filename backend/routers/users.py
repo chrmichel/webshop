@@ -25,6 +25,7 @@ from .login import get_current_active_user
 
 
 router = APIRouter()
+myacc = APIRouter(tags=["My account"])
 
 
 @router.get("/all", response_model=list[UserOut])
@@ -32,12 +33,12 @@ def list_all_users(db: Session = Depends(get_db)):
     return get_all_users(db)
 
 
-@router.get("/my-account", response_model=FullUserOut)
+@myacc.get("/", response_model=FullUserOut)
 def my_account(user: User = Security(get_current_active_user)):
     return user
 
 
-@router.patch("/my-account", response_model=FullUserOut)
+@myacc.patch("/", response_model=FullUserOut)
 def update_account(
     new_data: UserUpdate,
     user: User = Security(get_current_active_user),
@@ -46,7 +47,7 @@ def update_account(
     return update_user(new_data, user, db)
 
 
-@router.delete("/delete", status_code=204)
+@myacc.delete("/", status_code=204)
 def delete_user_for_good(
     user: User = Security(get_current_active_user), db: Session = Depends(get_db)
 ):
@@ -76,7 +77,7 @@ def make_user(userdata: UserIn, db: Session = Depends(get_db)):
     return user
 
 
-@router.post("/reset-password", response_model=UserOut)
+@myacc.post("/reset-password", response_model=UserOut)
 def password_reset(
     new_pw: PasswordUpdate,
     user: User = Depends(get_current_active_user),
@@ -85,10 +86,13 @@ def password_reset(
     return reset_password(new_pw.new_pw, user, db)
 
 
-@router.post("/add-credit", response_model=UserOut)
+@myacc.post("/add-credit", response_model=UserOut)
 def add_credit(
     credit_addition: AddCredit,
     user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     return more_money(credit_addition.amount, user, db)
+
+
+router.include_router(myacc, prefix="/my-account")

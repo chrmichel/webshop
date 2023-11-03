@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 
-from core.schemas import UserIn
+from core.schemas import UserIn, ItemIn
 
 env_path = Path(".") / ".env"
 load_dotenv(env_path)
@@ -34,5 +34,14 @@ MOLLY = UserIn(
     plainpw="mollypw",
 )
 ADMIN = UserIn(
-    username="ADMIN", fullname="Ad Min", email="admin@web.shop", plainpw="adminpw"
+    username="ADMIN",
+    fullname="Ad Min",
+    email="admin@web.shop",
+    plainpw="adminpw",
+)
+PS5 = ItemIn(
+    name="PlayStation 5",
+    description="Sony PS5 Gaming Console, 2 controllers included",
+    price=44999,
+    stock=300,
 )

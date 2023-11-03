@@ -25,3 +25,23 @@ def set_user_inactive(username: str, db: Session) -> User:
     db.commit()
     db.refresh(user)
     return user
+
+
+def set_user_active(username: str, db: Session) -> User:
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise NoSuchUserError
+    user.is_active = True
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def make_user_admin(username: str, db: Session) -> User:
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise NoSuchUserError
+    user.role = "admin"
+    db.commit()
+    db.refresh(user)
+    return user

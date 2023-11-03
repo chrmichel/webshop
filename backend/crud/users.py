@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from core.schemas import UserIn, UserUpdate, Role
 from db.models import User
@@ -64,7 +65,8 @@ def create_user(user: UserIn, db: Session) -> User:
 
 
 def update_user(new_data: UserUpdate, user: User, db: Session) -> User:
-    update_dict = new_data.model_dump(exclude_unset=True)
+    update_dict = new_data.model_dump(exclude_defaults=True)
+    update_dict["updated_at"] = datetime.now()
     db.query(User).filter(User.id == user.id).update(update_dict)
     db.commit()
     return get_user_id(user.id, db)

@@ -20,7 +20,7 @@ from db.session import get_db
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="token",
     scopes={
-        # "me": "Access information about the current user.",
+        "me": "Access information about the current user.",
         "admin": "Admin privilege; modify shop items",
     },
 )
@@ -77,10 +77,10 @@ async def get_current_active_user(current_user: User = Security(get_current_user
     raise HTTPException(status_code=401, detail="Deactivated user")
 
 
-async def get_current_active_admin(current_user: User = Security(get_current_user)):
-    if current_user.role == Role.ADMIN:
-        return current_user
-    raise HTTPException(status_code=401, detail="Current user is not admin")
+async def get_admin(
+    current_user: User = Security(get_current_active_user, scopes=["admin"])
+):
+    return current_user
 
 
 @router.post("/token", response_model=Token)

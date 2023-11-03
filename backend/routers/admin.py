@@ -2,13 +2,11 @@ from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
 from core.schemas import UserIn, UserOut
-from crud.admin import new_admin, set_user_inactive
+from crud.admin import new_admin, set_user_inactive, set_user_active
 from db.session import get_db
 from .login import get_current_active_user
 
-router = APIRouter(
-    #
-)
+router = APIRouter()
 
 
 @router.get("/", dependencies=[Security(get_current_active_user, scopes=["admin"])])
@@ -28,3 +26,12 @@ def create_admin(admin_data: UserIn, db: Session = Depends(get_db)):
 )
 def ban_user(username: str, db: Session = Depends(get_db)):
     return set_user_inactive(username, db)
+
+
+@router.put(
+    "/unban/{username}",
+    dependencies=[Security(get_current_active_user, scopes=["admin"])],
+    response_model=UserOut,
+)
+def unban_user(username: str, db: Session = Depends(get_db)):
+    return set_user_active(username, db)
