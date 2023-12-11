@@ -20,7 +20,7 @@ def new_admin(input: UserIn, db: Session) -> User:
 def set_user_inactive(username: str, db: Session) -> User:
     user = db.query(User).filter(User.username == username).first()
     if not user:
-        raise NoSuchUserError
+        raise NoSuchUserError(username)
     user.is_active = False
     db.commit()
     db.refresh(user)
@@ -30,7 +30,7 @@ def set_user_inactive(username: str, db: Session) -> User:
 def set_user_active(username: str, db: Session) -> User:
     user = db.query(User).filter(User.username == username).first()
     if not user:
-        raise NoSuchUserError
+        raise NoSuchUserError(username)
     user.is_active = True
     db.commit()
     db.refresh(user)
@@ -40,7 +40,7 @@ def set_user_active(username: str, db: Session) -> User:
 def make_user_admin(username: str, db: Session) -> User:
     user = db.query(User).filter(User.username == username).first()
     if not user:
-        raise NoSuchUserError
+        raise NoSuchUserError(username)
     user.role = "admin"
     db.commit()
     db.refresh(user)

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
-import datetime
 
+from core.config import now_in_utc
 from .base_class import Base
 
 
@@ -12,8 +12,8 @@ class User(Base):
     email = Column("email", String(50), unique=True, nullable=False)
     hashedpw = Column("hashedpw", String(70))
     credit = Column("credit", Integer)
-    created_at = Column("created at", DateTime, default=datetime.datetime.now)
-    updated_at = Column("updated at", DateTime, default=datetime.datetime.now)
+    created_at = Column("created at", DateTime, default=now_in_utc)
+    updated_at = Column("updated at", DateTime, default=now_in_utc, onupdate=now_in_utc)
     address = Column("address", String(200))
     role = Column("role", String(10))
     is_active = Column("is active", Boolean, default=True)
@@ -26,5 +26,5 @@ class Item(Base):
     description = Column("description", String(200))
     price = Column("price", Integer)
     stock = Column("stock", Integer)
-    created_at = Column("created at", DateTime, default=datetime.datetime.utcnow)
-    updated_at = Column("updated at", DateTime, default=datetime.datetime.utcnow)
+    created_at = Column("created at", DateTime, default=now_in_utc)
+    updated_at = Column("updated at", DateTime, default=now_in_utc, onupdate=now_in_utc)

@@ -5,36 +5,34 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import create_engine
 import sys
 import os
-import datetime
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.config import ADMIN, MIKE, MOLLY, ADDRESS
+from core.config import ADMIN, MIKE, MOLLY, ADDRESS, PS5, LAPTOP
+from core.schemas import ItemIn, UserIn
+from crud.admin import new_admin
+from crud.items import create_item
+from crud.users import create_user
 from db.base_class import Base
-from db.models import User
 from db.session import get_db
-from routers.login import router as login_router, get_current_user
-from routers.users import router as user_router
 from main import app as app_
 
 # establish connection to test database
-TEST_DB_URL = "sqlite:///test.db"
+TEST_DB_URL = "sqlite://"
 engine = create_engine(TEST_DB_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def start_app() -> FastAPI:
-    app = app_
-    app.include_router(login_router)
-    app.include_router(user_router, prefix="/users")
-    return app
+# def start_app() -> FastAPI:
+#     app = app_
+#     return app
 
 
 @pytest.fixture
 def app() -> FastAPI:
     Base.metadata.create_all(engine)
-    _app = start_app()
-    yield _app
+    # _app = start_app()
+    yield app_
     Base.metadata.drop_all(engine)
 
 
@@ -43,6 +41,10 @@ def db_session() -> Session:
     connection = engine.connect()
     transaction = connection.begin()
     session = SessionLocal(bind=connection)
+    create_user(UserIn(**MIKE), session)
+    new_admin(UserIn(**ADMIN), session)
+    create_item(ItemIn(**PS5), session)
+    session.commit()
     yield session
     transaction.rollback()
     connection.close()
@@ -52,7 +54,7 @@ def db_session() -> Session:
 
 
 @pytest.fixture
-def client(app, db_session, mike_in, admin_in) -> Session:
+def client(app, db_session) -> Session:
     def _get_test_db():
         try:
             yield db_session
@@ -61,12 +63,12 @@ def client(app, db_session, mike_in, admin_in) -> Session:
 
     app.dependency_overrides[get_db] = _get_test_db
     with TestClient(app) as _client:
-        r = _client.post("/users/register", json=mike_in)
-        if r.status_code != 201:
-            raise Exception(r.json())
-        r2 = _client.post("/admin/register", json=admin_in)
-        if r2.status_code != 201:
-            raise Exception(r2.json())
+        # r = _client.post("/users/register", json=mike_in)
+        # if r.status_code != 201:
+        #     raise Exception(r.json())
+        # r2 = _client.post("/admin/register", json=admin_in)
+        # if r2.status_code != 201:
+        #     raise Exception(r2.json())
         yield _client
 
 
@@ -93,20 +95,27 @@ def admin_client(client: TestClient, admin_in) -> Session:
 
 @pytest.fixture
 def mike_in() -> dict:
-    mike = MIKE.model_dump()
-    return mike
+    return MIKE
 
 
 @pytest.fixture
 def admin_in() -> dict:
-    admin = ADMIN.model_dump()
-    return admin
+    return ADMIN
 
 
 @pytest.fixture
 def molly_in() -> dict:
-    molly = MOLLY.model_dump()
-    return molly
+    return MOLLY
+
+
+@pytest.fixture
+def ps5_in() -> dict:
+    return PS5
+
+
+@pytest.fixture
+def laptop_in() -> dict:
+    return LAPTOP
 
 
 @pytest.fixture

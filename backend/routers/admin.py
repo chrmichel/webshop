@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
 from core.schemas import UserIn, UserOut
-from crud.admin import new_admin, set_user_inactive, set_user_active
+from crud.admin import new_admin, set_user_inactive, set_user_active, make_user_admin
 from db.session import get_db
 from .login import get_current_active_user
 
@@ -35,3 +35,12 @@ def ban_user(username: str, db: Session = Depends(get_db)):
 )
 def unban_user(username: str, db: Session = Depends(get_db)):
     return set_user_active(username, db)
+
+
+@router.post(
+    "/promote/{username}",
+    dependencies=[Security(get_current_active_user, scopes=["admin"])],
+    response_model=UserOut,
+)
+def promote_user(username: str, db=Depends(get_db)):
+    return make_user_admin(username, db)

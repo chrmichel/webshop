@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-from datetime import datetime, timezone
 
 from core.schemas import ItemIn, ItemUpdate
 from db.models import Item
@@ -47,7 +46,6 @@ def create_item(item_in: ItemIn, db: Session) -> Item:
 
 def update_item(id: int, item_up: ItemUpdate, db: Session) -> Item:
     data = item_up.model_dump(exclude_defaults=True)
-    data["updated_at"] = datetime.now()
     upd = db.query(Item).filter(Item.id == id).update(data)
     if not upd:
         raise NoSuchItemError(id)

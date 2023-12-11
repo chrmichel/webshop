@@ -1,8 +1,13 @@
 from dotenv import load_dotenv
 import os
 from pathlib import Path
+import datetime
+from zoneinfo import ZoneInfo
 
-from core.schemas import UserIn, ItemIn
+
+def now_in_utc():
+    return datetime.datetime.now(tz=ZoneInfo("UTC"))
+
 
 env_path = Path(".") / ".env"
 load_dotenv(env_path)
@@ -20,28 +25,34 @@ class Settings:
 settings = Settings()
 
 ADDRESS = "3529 Lincoln St, Chicago, IL"
-MIKE = UserIn(
-    fullname="Michael Biggs",
-    username="mbiggie",
-    email="mbiggs@cpd.gov",
-    plainpw="mikepw",
-    credit=5212,
-)
-MOLLY = UserIn(
-    fullname="Molly Flynn",
-    username="rollymolly",
-    email="m.flynn@wpelem.gov",
-    plainpw="mollypw",
-)
-ADMIN = UserIn(
-    username="ADMIN",
-    fullname="Ad Min",
-    email="admin@web.shop",
-    plainpw="adminpw",
-)
-PS5 = ItemIn(
-    name="PlayStation 5",
-    description="Sony PS5 Gaming Console, 2 controllers included",
-    price=44999,
-    stock=300,
-)
+MIKE = {
+    "fullname": "Michael Biggs",
+    "username": "mbiggie",
+    "email": "mbiggs@cpd.gov",
+    "plainpw": "mikepw",
+    "credit": 5212,
+}
+MOLLY = {
+    "fullname": "Molly Flynn",
+    "username": "rollymolly",
+    "email": "m.flynn@wpelem.gov",
+    "plainpw": "mollypw",
+}
+ADMIN = {
+    "username": "ADMIN",
+    "fullname": "Ad Min",
+    "email": "admin@web.shop",
+    "plainpw": "adminpw",
+}
+PS5 = {
+    "name": "PlayStation 5",
+    "description": "Sony PS5 Gaming Console, 2 controllers included",
+    "price": 44999,
+    "stock": 300,
+}
+LAPTOP = {
+    "name": "Dell XPS 15",
+    "description": "Dell Gaming Laptop",
+    "price": 149990,
+    "stock": 40,
+}
