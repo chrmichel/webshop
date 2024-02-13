@@ -2,10 +2,29 @@ from pydantic import EmailStr, Field, BaseModel, ConfigDict
 from datetime import datetime
 from enum import Enum
 
+from core.config import now_in_utc
 
 class Role(str, Enum):
     ADMIN = "admin"
     USER = "user"
+
+
+class Address(BaseModel):
+    street: str
+    house: int
+    house_add: str|None = None
+    postcode: str
+    city: str
+    province: str|None = None
+    country: str = "GERMANY"
+
+    def __str__(self):
+        return f"""
+{self.street} {self.house} {self.house_add}
+{self.postcode} {self.city}
+{self.province}
+{self.country}
+        """
 
 
 class UserBase(BaseModel):
@@ -13,7 +32,7 @@ class UserBase(BaseModel):
     fullname: str
     email: EmailStr
     credit: int | None = Field(default=0, ge=0)
-    address: str | None = None
+    address: Address | None = None
     is_active: bool = True
 
 
@@ -21,7 +40,7 @@ class UserUpdate(BaseModel):
     username: str | None = None
     fullname: str | None = None
     email: EmailStr | None = None
-    address: str | None = None
+    address: Address | None = None
 
 
 class UserIn(UserBase):
@@ -34,6 +53,8 @@ class UserDB(UserBase):
     created_at: datetime
     updated_at: datetime
     role: Role
+    address: str | None = None
+    picture_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -51,6 +72,14 @@ class FullUserOut(UserBase):
     created_at: datetime
     updated_at: datetime
     role: Role
+    address: str | None = None
+
+
+class UserBill(BaseModel):
+    fullname: str
+    address: str
+    id: int
+    email: EmailStr
 
 
 class ItemBase(BaseModel):
@@ -105,3 +134,31 @@ class AddCredit(BaseModel):
 
 class StockAmount(BaseModel):
     amount: int
+
+
+class CartItem(BaseModel):
+    item: ItemDB
+    number: int = Field(gt=0)
+
+
+class Post(BaseModel):
+    item_id: int
+    number: int = Field(gt=0)
+
+
+class Cart(BaseModel):
+    contents: list[CartItem] = []
+
+    @property
+    def total(self):
+        s = 0
+        for order in self.contents:
+            s += order.item.price * order.number
+
+
+class Order(BaseModel):
+    contents: list[CartItem] = []
+    customer: UserBill
+    total: int
+    date: datetime = now_in_utc()
+    id: int

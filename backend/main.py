@@ -4,17 +4,19 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 from contextlib import asynccontextmanager
 
-from core.config import ADMIN, MIKE, MOLLY, PS5, settings
+from core.config import ADMIN, MIKE, MOLLY, PS5, PROFILEPIC, settings
 from core.schemas import UserIn, ItemIn
 from crud.admin import new_admin
 from crud.errors import NoSuchItemError, NoSuchUserError
 from crud.items import get_item_name, create_item
+from crud.pictures import get_picture_path, add_pic_to_db
 from crud.users import get_user, create_user
 from db.base_class import Base
 from db.session import engine, SessionLocal
 from routers.admin import router as admin_router
 from routers.items import router as item_router
 from routers.login import router as login_router
+from routers.my_account import myacc
 from routers.users import router as user_router
 
 
@@ -37,6 +39,10 @@ def startup():
             _ = get_item_name(PS5["name"], db)
         except NoSuchItemError:
             _ = create_item(ItemIn(**PS5), db)
+        try:
+            _ = get_picture_path(1, db)
+        except Exception:
+            add_pic_to_db(PROFILEPIC, db)
 
 
 @asynccontextmanager
@@ -46,7 +52,8 @@ async def lifespan(app: FastAPI):
     app.include_router(user_router, prefix="/users", tags=["Users"])
     app.include_router(login_router, tags=["Login"])
     app.include_router(item_router, prefix="/items", tags=["Items"])
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+    app.include_router(myacc, prefix="/my-account", tags=["My account"])
+    app.mount("/static", StaticFiles(directory="backend/static"), name="static")
     yield
 
 
@@ -58,9 +65,9 @@ async def start():
     return RedirectResponse("/docs")
 
 
-@app.get("/favicon.ico", include_in_schema=False)
+@app.get("/wish", include_in_schema=False)
 def get_icon():
-    return FileResponse("/static/images/wishicon.png")
+    return FileResponse("backend/static/images/wishicon.png")
 
 
 if __name__ == "__main__":

@@ -24,7 +24,14 @@ class Settings:
 
 settings = Settings()
 
-ADDRESS = "3529 Lincoln St, Chicago, IL"
+ADDRESS = {
+    "street": "5th Street",
+    "house": 3674,
+    "postcode": "8956V5",
+    "city": "Chicago",
+    "province": "Illinois",
+    "country": "UNITED STATES",
+}
 MIKE = {
     "fullname": "Michael Biggs",
     "username": "mbiggie",
@@ -56,3 +63,4 @@ LAPTOP = {
     "price": 149990,
     "stock": 40,
 }
+PROFILEPIC = "backend/static/images/emptyprofile.png"

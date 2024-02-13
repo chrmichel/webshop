@@ -23,4 +23,4 @@ httpx
 
 requests
 ipykernel
-PyQt5
+# PyQt5

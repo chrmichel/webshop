@@ -66,6 +66,7 @@ def create_user(user: UserIn, db: Session) -> User:
 
 def update_user(new_data: UserUpdate, user: User, db: Session) -> User:
     update_dict = new_data.model_dump(exclude_defaults=True)
+    update_dict["address"] = str(update_dict["address"])
     update_dict["updated_at"] = datetime.now()
     db.query(User).filter(User.id == user.id).update(update_dict)
     db.commit()

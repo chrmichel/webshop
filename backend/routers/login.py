@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 
 from core.config import settings
-from core.schemas import TokenData, Token, Role
+from core.schemas import TokenData, Token
 from crud.users import get_user
 from crud.errors import NoSuchUserError
 from crud.security import authenticate_user, create_access_token

@@ -57,37 +57,43 @@ def test_create_user_username_repeat(client: TestClient, user_repeat_username):
     assert response.status_code == 451
 
 
+def test_login(client: TestClient, mike_in):
+    login_data = {"username": mike_in["username"], "password": mike_in["plainpw"]}
+    r = client.post("/token", data=login_data)
+    assert "access_token" in r.json().keys()
+
+
 def test_current_user(auth_client: TestClient):
-    response = auth_client.get("/users/my-account")
+    response = auth_client.get("/my-account")
     assert response.status_code == 200
 
 
 def test_update_user(auth_client: TestClient, user_upate):
-    response = auth_client.patch("/users/my-account", json=user_upate)
+    response = auth_client.patch("/my-account", json=user_upate)
     assert response.status_code == 200
 
 
 def test_delete_user(auth_client: TestClient):
-    response = auth_client.delete("/users/delete")
+    response = auth_client.delete("/my-account")
     assert response.status_code == 204
 
 
 def test_reset_password(auth_client: TestClient):
     new_pw = "NEW_Test_pw"
-    response = auth_client.post("/users/reset-password", json={"new_pw": new_pw})
+    response = auth_client.post("/my-account/reset-password", json={"new_pw": new_pw})
     assert response.status_code == 200
 
 
 def test_add_credit(auth_client: TestClient, mike_in: dict):
     amount = 1
-    response = auth_client.post("/users/add-credit", json={"amount": amount})
+    response = auth_client.post("/my-account/add-credit", json={"amount": amount})
     assert response.status_code == 200
     assert response.json()["credit"] == mike_in["credit"] + amount
 
 
 def test_add_credit_negative(auth_client: TestClient):
     amount = -2
-    response = auth_client.post("/users/add-credit", json={"amount": amount})
+    response = auth_client.post("/my-account/add-credit", json={"amount": amount})
     assert response.status_code == 422
     msg = """Input should be greater than 0"""
     assert response.json()["detail"][0]["msg"] == msg
@@ -95,7 +101,12 @@ def test_add_credit_negative(auth_client: TestClient):
 
 def test_add_credit_float(auth_client: TestClient):
     amount = 1.6
-    response = auth_client.post("/users/add-credit", json={"amount": amount})
+    response = auth_client.post("/my-account/add-credit", json={"amount": amount})
     assert response.status_code == 422
     msg = "Input should be a valid integer, got a number with a fractional part"
     assert response.json()["detail"][0]["msg"] == msg
+
+
+def test_get_picture(auth_client: TestClient):
+    response = auth_client.get("/my-account/picture")
+    assert response.status_code == 200 

@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "webshop"
+version = "0.1.0"
+description = "this is supposed to become a webshop running on FastAPI with a PyQt5 frontend"
+authors = ["Christian Michel <cmichel652@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+PyQt5 = "=5.15.2"
+fastapi = "^0.109.2"
+uvicorn = {extras = ["standard"], version = "^0.27.0.post1"}
+pydantic = {extras = ["email"], version = "^2.6.1"}
+python-multipart = "^0.0.7"
+sqlalchemy = "^2.0.25"
+python-jose = "^3.3.0"
+bcrypt = "^4.1.2"
+passlib = "^1.7.4"
+python-dotenv = "^1.0.1"
+pytest = "^8.0.0"
+pytest-qt = "^4.4.0"
+pytest-mock = "^3.12.0"
+httpx = "^0.26.0"
+requests = "^2.31.0"
+ipykernel = "^6.29.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
