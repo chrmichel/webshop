@@ -141,12 +141,19 @@ class CartItem(BaseModel):
     number: int = Field(gt=0)
 
 
-class Post(BaseModel):
+class MakePost(BaseModel):
     item_id: int
-    number: int = Field(gt=0)
+    amount: int = Field(gt=0)
+    cart_id: int
+    user_id: int
 
 
-class Cart(BaseModel):
+class PostSchema(MakePost):
+    date_added: datetime
+    id: int
+
+
+class CartSchema(BaseModel):
     contents: list[CartItem] = []
 
     @property
@@ -156,7 +163,7 @@ class Cart(BaseModel):
             s += order.item.price * order.number
 
 
-class Order(BaseModel):
+class OrderSchema(BaseModel):
     contents: list[CartItem] = []
     customer: UserBill
     total: int

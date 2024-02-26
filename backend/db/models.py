@@ -20,6 +20,7 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(10))
     is_active: Mapped[bool] = mapped_column(default=True)
     picture_id: Mapped[int] = mapped_column(ForeignKey("profile_pictures.id"), default=1)
+    order_history: Mapped[list["Order"]] = relationship(back_populates="user")
 
 
 class Item(Base):
@@ -43,17 +44,25 @@ class ProfilePicture(Base):
 class Order(Base):
     __tablename__ = "orders"
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     date: Mapped[datetime] = mapped_column(DateTime, default=now_in_utc)
-    posts: Mapped[list["Post"]] = relationship(back_populates="order")
+    cart_id: Mapped[int] = mapped_column(ForeignKey("carts.id"))
+    cart: Mapped["Cart"] = relationship("carts")
+    user: Mapped["User"] = relationship(back_populates="order_history")
+
+
+class Cart(Base):
+    __tablename__ = "carts"
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    posts: Mapped[list["Post"]] = relationship(back_populates="cart")
 
 
 class Post(Base):
     __tablename__ = "posts"
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"))
-    order: Mapped["Order"] = relationship(back_populates="posts")
+    cart_id: Mapped[int] = mapped_column(ForeignKey("carts.id"))
     item_id: Mapped[int] = mapped_column(ForeignKey("items.id"))
     amount: Mapped[int]
+    date_added: Mapped[datetime] = mapped_column(DateTime, default=now_in_utc)
+    cart: Mapped["Cart"] = relationship(back_populates="posts")
 

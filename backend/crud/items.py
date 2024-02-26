@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from core.schemas import ItemIn, ItemUpdate
-from db.models import Item
+from core.schemas import ItemIn, ItemUpdate, MakePost
+from db.models import Item, Post, Cart
 from .errors import NoSuchItemError, ItemNameTakenError
 
 
@@ -71,3 +71,49 @@ def change_stock_amount(id: int, amount: int, db: Session) -> int:
         raise Exception
     db.commit()
     return new
+
+
+def make_post(post: MakePost, db: Session) -> Post:
+    data = post.model_dump()
+    try:
+        change_stock_amount(data["item_id"], -data["amount"], db)
+    except ValueError:
+        raise Exception("Insufficient stock")
+    except Exception as e:
+        raise e
+    new_post = Post(**data)
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+    return new_post
+
+
+def get_post(id: int, db: Session) -> Post:
+    post = db.query(Post).filter(Post.id == id).first()
+    if not post:
+        raise ValueError("No post with this id found.")
+    return post
+
+
+def post_change_amount(id: int, new_amount: int, db: Session) -> Post:
+    post: Post = get_post(id, db)
+    old_amount: int = post.amount
+    try:
+        change_stock_amount(id, (old_amount-new_amount), db)
+    except ValueError:
+        raise Exception("Insufficient stock")
+    except Exception as e:
+        raise e
+    post.amount = new_amount
+    db.commit()
+    db.refresh(post)
+    return post
+
+
+def delete_post(id: int, db: Session) -> None:
+    post: Post = get_post(id, db)
+    change_stock_amount(post.item_id, post.amount, db)
+    db.query(Post).filter(Post.id == id).delete()
+    db.commit()
+    return
+

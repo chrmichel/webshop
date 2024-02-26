@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 from contextlib import asynccontextmanager
 
-from core.config import ADMIN, MIKE, MOLLY, PS5, PROFILEPIC, settings
+from core.config import ADMIN, MIKE, MOLLY, PS5, LAPTOP, PROFILEPIC, settings
 from core.schemas import UserIn, ItemIn
 from crud.admin import new_admin
 from crud.errors import NoSuchItemError, NoSuchUserError
@@ -39,6 +39,10 @@ def startup():
             _ = get_item_name(PS5["name"], db)
         except NoSuchItemError:
             _ = create_item(ItemIn(**PS5), db)
+        try:
+            _ = get_item_name(LAPTOP["name"], db)
+        except NoSuchItemError:
+            _ = create_item(ItemIn(**LAPTOP), db)
         try:
             _ = get_picture_path(1, db)
         except Exception:
